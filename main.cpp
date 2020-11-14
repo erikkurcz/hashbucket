@@ -12,7 +12,8 @@
 #include <cmath>
 #include <string.h>
 
-#include "hashfunction.hh"
+#include "hash_functions.hh"
+
 
 void usage(void){
     std::cout << "Usage: hashpls -n buckets -b pow_base -f file_of_words str1 ..." << std::endl; }
@@ -26,7 +27,8 @@ int main(int argc, char* argv[]){
     int item_ct(0);
     int expected_bucket_size(0);
     std::vector<std::string> to_hash;
-
+    
+    // Parse args
     if (argc < 5){
         usage();
         return 1;
