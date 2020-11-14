@@ -13,7 +13,7 @@
 typedef std::pair<std::string, int(*)(const char*, int, int)> name_func_pair_t;
 typedef std::vector<name_func_pair_t> hash_functions_vec_t;
 
-int generic_hash(const char* str, int pow_base, int max_buckets){
+int generic_hash(const char* str, int max_buckets, int pow_base = 153){
     
     const int len = strlen(str);
     long hash = 0;
@@ -25,7 +25,7 @@ int generic_hash(const char* str, int pow_base, int max_buckets){
     return hash;
 }
 
-int sum_and_mod(const char* str, int pow_base, int max_buckets){
+int sum_and_mod(const char* str, int max_buckets, int pow_base = 153){
     
     const int len = strlen(str);
     long hash = 0;

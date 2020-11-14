@@ -103,7 +103,7 @@ int main(int argc, char* argv[]){
 
         int (*hash_func)(const char*, int, int)(func_iter->second);
         for (vec_iter = to_hash.begin(); vec_iter != to_hash.end(); vec_iter++){
-            hashval = (*hash_func)((*vec_iter).c_str(), pow_base, buckets);
+            hashval = (*hash_func)((*vec_iter).c_str(), buckets, pow_base);
 
             // See if exists
             map_iter = bucket_to_count_map.find(hashval);
