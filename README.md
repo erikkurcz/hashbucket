@@ -16,27 +16,27 @@ g++ [-g] -o hashpls main.cpp
 ### Output
 
 ```shell
-Hashing 100000 items into 10 buckets
+Hashing 1000 items into 10 buckets
 Hashing with generic_hash...
-Bucket  0 contains   9934 elements (-  66, - 0%)
-Bucket  1 contains   9876 elements (- 124, - 1%)
-Bucket  2 contains   9874 elements (- 126, - 1%)
-Bucket  3 contains  10125 elements (+ 125, + 1%)
-Bucket  4 contains   9998 elements (-   2, - 0%)
-Bucket  5 contains  10207 elements (+ 207, + 2%)
-Bucket  6 contains   9943 elements (-  57, - 0%)
-Bucket  7 contains   9995 elements (-   5, - 0%)
-Bucket  8 contains   9936 elements (-  64, - 0%)
-Bucket  9 contains  10112 elements (+ 112, + 1%)
+Bucket  0 contains   98 elements (-   2, - 2%)
+Bucket  1 contains   90 elements (-  10, -10%)
+Bucket  2 contains  112 elements (+  12, +12%)
+Bucket  3 contains   90 elements (-  10, -10%)
+Bucket  4 contains  115 elements (+  15, +15%)
+Bucket  5 contains   81 elements (-  19, -19%)
+Bucket  6 contains  115 elements (+  15, +15%)
+Bucket  7 contains   99 elements (-   1, - 1%)
+Bucket  8 contains  121 elements (+  21, +21%)
+Bucket  9 contains   79 elements (-  21, -21%)
 Hashing with sum_and_mod...
-Bucket  0 contains  10084 elements (+  84, + 0%)
-Bucket  1 contains   9865 elements (- 135, - 1%)
-Bucket  2 contains  10104 elements (+ 104, + 1%)
-Bucket  3 contains  10022 elements (+  22, + 0%)
-Bucket  4 contains   9882 elements (- 118, - 1%)
-Bucket  5 contains  10069 elements (+  69, + 0%)
-Bucket  6 contains   9890 elements (- 110, - 1%)
-Bucket  7 contains   9977 elements (-  23, - 0%)
-Bucket  8 contains  10032 elements (+  32, + 0%)
-Bucket  9 contains  10075 elements (+  75, + 0%)
+Bucket  0 contains  107 elements (+   7, + 7%)
+Bucket  1 contains   92 elements (-   8, - 8%)
+Bucket  2 contains  106 elements (+   6, + 6%)
+Bucket  3 contains   94 elements (-   6, - 6%)
+Bucket  4 contains   94 elements (-   6, - 6%)
+Bucket  5 contains  111 elements (+  11, +11%)
+Bucket  6 contains  111 elements (+  11, +11%)
+Bucket  7 contains  104 elements (+   4, + 4%)
+Bucket  8 contains   82 elements (-  18, -18%)
+Bucket  9 contains   99 elements (-   1, - 1%)
 ```
