@@ -80,61 +80,78 @@ int main(int argc, char* argv[]){
 
     // We want to track the distribution and visualize it
     // So let's use a map for it
-    std::map<int, int> map;
+    std::map<int, int> bucket_to_count_map;
     std::map<int, int>::iterator map_iter;
     typedef std::pair<int, int> mappair;
-    std::set<int> unique_buckets;
+    std::set<int> unique_buckets_set;
+    int highest_entry_count(0);
 
     std::cout << "Hashing " << item_ct << " items into " << buckets << " buckets" << std::endl;
     std::vector<std::string>::iterator vec_iter;
     int hashval(0);
-    int highest_entry_count(0);
-    for (vec_iter = to_hash.begin(); vec_iter != to_hash.end(); vec_iter++){
-        hashval = myhash((*vec_iter).c_str(), pow_base, buckets);
-
-        // See if exists
-        map_iter = map.find(hashval);
-        if (map_iter == map.end()){
-            // Does not exist, insert it
-            map.insert(mappair(hashval, 1));
-        } else {
-            // Does exist, construct new value and replace
-            if (map_iter->second+1 > highest_entry_count){
-                highest_entry_count = map_iter->second+1;
-            }
-            mappair newval(hashval, map_iter->second+1);
-            map.erase(map_iter);
-            map.insert(newval);
-        }
-
-        // Keep an ordered set of the hash buckets as well
-        // Allows us to pretty print buckets in ascending order
-        unique_buckets.insert(hashval);
-    }
     
-    // Now we can print out and analyze our distribution
-    std::set<int>::iterator bucket_iter;
-    bucket_iter = unique_buckets.begin();
-    char pos_ind;
-
-    while (bucket_iter != unique_buckets.end()){
+    hash_functions_vec_t* hfptr = get_hash_functions();
+    hash_functions_vec_t::iterator func_iter;
+    func_iter = hfptr->begin();
+    while (func_iter != hfptr->end()){
         
-        map_iter = map.find(*bucket_iter);
-        if (map_iter != map.end()){
-            if (map_iter->second > expected_bucket_size){
-                pos_ind = '+';
-            } else { 
-                pos_ind = '-';
+        std::cout << "Hashing with " << func_iter->first << "..." << std::endl;
+        // Reset our analysis structures and variables
+        bucket_to_count_map.clear();
+        unique_buckets_set.clear();
+        highest_entry_count = 0;
+
+        int (*hash_func)(const char*, int, int)(func_iter->second);
+        for (vec_iter = to_hash.begin(); vec_iter != to_hash.end(); vec_iter++){
+            hashval = (*hash_func)((*vec_iter).c_str(), pow_base, buckets);
+
+            // See if exists
+            map_iter = bucket_to_count_map.find(hashval);
+            if (map_iter == bucket_to_count_map.end()){
+                // Does not exist, insert it
+                bucket_to_count_map.insert(mappair(hashval, 1));
+            } else {
+                // Does exist, construct new value and replace
+                if (map_iter->second+1 > highest_entry_count){
+                    highest_entry_count = map_iter->second+1;
+                }
+                mappair newval(hashval, map_iter->second+1);
+                bucket_to_count_map.erase(map_iter);
+                bucket_to_count_map.insert(newval);
             }
-            std::cout << "Bucket " << std::setw(floor(log10(buckets)+1)) << *bucket_iter << " contains " 
-                      << std::setw(floor(log10(item_ct)+1)) << map_iter->second << " elements " 
-                      << "(" << pos_ind << std::setw(4) << std::abs(map_iter->second-expected_bucket_size)
-                      << ", " << pos_ind << std::setw(2) 
-                      << (int)((std::abs((float)map_iter->second-expected_bucket_size)/expected_bucket_size)*100) << "%)\n";
+
+            // Keep an ordered set of the hash buckets as well
+            // Allows us to pretty print buckets in ascending order
+            unique_buckets_set.insert(hashval);
+        }
+        
+        // Now we can print out and analyze our distribution
+        std::set<int>::iterator bucket_iter;
+        bucket_iter = unique_buckets_set.begin();
+        char pos_ind;
+
+        while (bucket_iter != unique_buckets_set.end()){
+            
+            map_iter = bucket_to_count_map.find(*bucket_iter);
+            if (map_iter != bucket_to_count_map.end()){
+                if (map_iter->second > expected_bucket_size){
+                    pos_ind = '+';
+                } else { 
+                    pos_ind = '-';
+                }
+                std::cout << "Bucket " << std::setw(floor(log10(buckets)+1)) << *bucket_iter << " contains " 
+                          << std::setw(floor(log10(item_ct)+1)) << map_iter->second << " elements " 
+                          << "(" << pos_ind << std::setw(4) << std::abs(map_iter->second-expected_bucket_size)
+                          << ", " << pos_ind << std::setw(2) 
+                          << (int)((std::abs((float)map_iter->second-expected_bucket_size)/expected_bucket_size)*100) << "%)\n";
+            }
+
+            bucket_iter++;
         }
 
-        bucket_iter++;
+        func_iter++;
     }
+
 
 
     return 0;

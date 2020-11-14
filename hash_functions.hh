@@ -40,8 +40,8 @@ int sum_and_mod(const char* str, int pow_base, int max_buckets){
 hash_functions_vec_t* get_hash_functions(void){
     
     hash_functions_vec_t* hfptr = new hash_functions_vec_t;
-    hfptr->push_back(name_func_pair_t("generic hash", &generic_hash));
-    hfptr->push_back(name_func_pair_t("generic hash", &generic_hash));
+    hfptr->push_back(name_func_pair_t("generic_hash", &generic_hash));
+    hfptr->push_back(name_func_pair_t("sum_and_mod", &sum_and_mod));
 
     return hfptr;
 
