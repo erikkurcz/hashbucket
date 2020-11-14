@@ -4,6 +4,8 @@ This is just a small project to demonstrate hash buckets and the relatively unif
 
 What I've done to try to be clever is to initialize a vector of pointers to functions used to hash. So whenever you run this, you will execute all different hash algorithms defined and pushed into this vector in the `hash_functions.hh` source file. Simply define a new hash function, add it to the `hash_functions_vec_t* get_hash_functions(void)` function definition, recompile and run!
 
+Note that the `words.gz` file can be unzipped using `gunzip words.gz`, and it is 100,000 randomly generated character strings of length 1-100. I generated this as a larger sample of possible values, even if they aren't all that likely in the real world.
+
 ### Compiling
 ```shell
 g++ [-g] -o hashpls main.cpp 
