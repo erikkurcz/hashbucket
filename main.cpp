@@ -91,6 +91,17 @@ int main(int argc, char* argv[]){
             while (getline(myfile, line)){
                 hashable_t* obj = new hashable_t;
                 obj->hashable = line;
+    
+                if (generate_data){
+                    // Roughly 10% of objects are enormous and a huge pain
+                    // So let's simulate that
+                    if (item_ct % 10 == 0){
+                        obj->query_load = random_between(1000000, 100000000);
+                        obj->disk_space = random_between(500000, 500000000);
+                    }
+                    obj->query_load = random_between(1000, 10000);
+                    obj->disk_space = random_between(500,50000);
+                }
                 to_hash.push_back(obj);
                 item_ct++;
             }
