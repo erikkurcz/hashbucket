@@ -16,7 +16,14 @@
 
 
 void usage(void){
-    std::cout << "Usage: hashpls -n buckets -b pow_base -f file_of_words str1 ..." << std::endl; }
+    std::cout << "Usage: hashpls -n buckets -b pow_base -f file_of_words str1 ..." << std::endl;
+}
+
+struct hashable_t {
+    std::string hashable;
+    int query_load;
+    int disk_usage;
+}; 
 
 int main(int argc, char* argv[]){
     
@@ -26,7 +33,7 @@ int main(int argc, char* argv[]){
     char* filename(NULL);
     int item_ct(0);
     int expected_bucket_size(0);
-    std::vector<std::string> to_hash;
+    std::vector<hashable_t*> to_hash;
     
     // Parse args
     if (argc < 5){
@@ -47,7 +54,9 @@ int main(int argc, char* argv[]){
                 i++;
                 pow_base = atoi(argv[i]);
             } else {
-                to_hash.push_back(std::string(argv[i]));
+                hashable_t* obj = new hashable_t;
+                obj->hashable = std::string(argv[i]);
+                to_hash.push_back(obj);
                 item_ct++;
             }
             i++;
@@ -65,7 +74,9 @@ int main(int argc, char* argv[]){
             // Good to read
             std::string line;
             while (getline(myfile, line)){
-                to_hash.push_back(line);
+                hashable_t* obj = new hashable_t;
+                obj->hashable = line;
+                to_hash.push_back(obj);
                 item_ct++;
             }
             myfile.close();
@@ -87,7 +98,7 @@ int main(int argc, char* argv[]){
     int highest_entry_count(0);
 
     std::cout << "Hashing " << item_ct << " items into " << buckets << " buckets" << std::endl;
-    std::vector<std::string>::iterator vec_iter;
+    std::vector<hashable_t*>::iterator vec_iter;
     int hashval(0);
     
     hash_functions_vec_t* hfptr = get_hash_functions();
@@ -103,7 +114,7 @@ int main(int argc, char* argv[]){
 
         int (*hash_func)(const char*, int, int)(func_iter->second);
         for (vec_iter = to_hash.begin(); vec_iter != to_hash.end(); vec_iter++){
-            hashval = (*hash_func)((*vec_iter).c_str(), buckets, pow_base);
+            hashval = (*hash_func)((*vec_iter)->hashable.c_str(), buckets, pow_base);
 
             // See if exists
             map_iter = bucket_to_count_map.find(hashval);
