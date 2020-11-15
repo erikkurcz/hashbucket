@@ -17,7 +17,8 @@
 
 
 void usage(void){
-    std::cout << "Usage: hashpls -n target_buckets -b pow_base -f file_of_words str1 ..." << std::endl;
+    std::cout << "Usage: hashpls -n target_buckets -b pow_base -f file_of_words [-g] [str1, ...]"
+              << "\nWhere -g indicates to generate data and compute statistics on a per-algorithm, per-bucket basis" << std::endl;
 }
 
 int random_between(int min, int max){
