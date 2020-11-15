@@ -16,7 +16,7 @@
 
 
 void usage(void){
-    std::cout << "Usage: hashpls -n buckets -b pow_base -f file_of_words str1 ..." << std::endl;
+    std::cout << "Usage: hashpls -n target_buckets -b pow_base -f file_of_words str1 ..." << std::endl;
 }
 
 struct hashable_t {
@@ -28,7 +28,7 @@ struct hashable_t {
 int main(int argc, char* argv[]){
     
     // Hash the given strings and print out
-    int buckets(0);
+    int target_buckets(0);
     int pow_base(128);
     char* filename(NULL);
     int item_ct(0);
@@ -46,7 +46,7 @@ int main(int argc, char* argv[]){
         while (i < argc){
             if (strcmp(argv[i], "-n") == 0){
                 i++;
-                buckets = atoi(argv[i]);
+                target_buckets = atoi(argv[i]);
             } else if (strcmp(argv[i], "-f") == 0){
                 i++;
                 filename = argv[i];
@@ -84,7 +84,7 @@ int main(int argc, char* argv[]){
     }
     
     // Calculate expected bucket size
-    expected_bucket_size = int((float)item_ct / buckets);
+    expected_bucket_size = int((float)item_ct / target_buckets);
 
     // Don't want to hash program name, just what's given
     // Also don't want to hash the null values either
@@ -97,10 +97,11 @@ int main(int argc, char* argv[]){
     std::set<int> unique_buckets_set;
     int highest_entry_count(0);
 
-    std::cout << "Hashing " << item_ct << " items into " << buckets << " buckets" << std::endl;
+    std::cout << "Hashing " << item_ct << " items into " << target_buckets << " buckets" << std::endl;
     std::vector<hashable_t*>::iterator vec_iter;
     int hashval(0);
     
+    // Get our hash functions so we can iterate and bucket the objects in n number of different ways
     hash_functions_vec_t* hfptr = get_hash_functions();
     hash_functions_vec_t::iterator func_iter;
     func_iter = hfptr->begin();
@@ -113,6 +114,8 @@ int main(int argc, char* argv[]){
         highest_entry_count = 0;
 
         int (*hash_func)(const char*, int, int)(func_iter->second);
+        
+        // ** ACTUALLY DO THE HASH AND PUT IN A BUCKET ** 
         for (vec_iter = to_hash.begin(); vec_iter != to_hash.end(); vec_iter++){
             hashval = (*hash_func)((*vec_iter)->hashable.c_str(), buckets, pow_base);
 
@@ -143,9 +146,9 @@ int main(int argc, char* argv[]){
 
         while (bucket_iter != unique_buckets_set.end()){
             
-            map_iter = bucket_to_count_map.find(*bucket_iter);
-            if (map_iter != bucket_to_count_map.end()){
-                if (map_iter->second > expected_bucket_size){
+            map_iter = buckets.find(*bucket_iter);
+            if (map_iter != buckets.end()){
+                if (map_iter->second.size() > expected_bucket_size){
                     pos_ind = '+';
                 } else { 
                     pos_ind = '-';
