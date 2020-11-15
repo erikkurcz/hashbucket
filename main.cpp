@@ -53,6 +53,13 @@ int main(int argc, char* argv[]){
             i++;
         }
     }
+
+    // Error check real quick
+    if (buckets == 0){
+        std::cerr << "Buckets argument -b missing" << std::endl;
+        usage();
+        return 1;
+    }
     
     // If we were given a file to read, let's get add that to the to_hash vector
     if (filename != NULL){
@@ -74,9 +81,6 @@ int main(int argc, char* argv[]){
     
     // Calculate expected bucket size
     expected_bucket_size = int((float)item_ct / buckets);
-
-    // Don't want to hash program name, just what's given
-    // Also don't want to hash the null values either
 
     // We want to track the distribution and visualize it
     // So let's use a map for it
