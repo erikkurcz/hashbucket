@@ -91,9 +91,17 @@ int main(int argc, char* argv[]){
 
     // We want to track the distribution and visualize it
     // So let's use a map for it
-    std::map<int, int> bucket_to_count_map;
-    std::map<int, int>::iterator map_iter;
-    typedef std::pair<int, int> mappair;
+
+    // buckets: int->[hashable_t*, hashable_t*]
+    // This will actually hold all the hashables so we can analyze them
+    typedef std::map<int, std::vector<hashable_t*>> buckets_t;
+    // META DICTIONARY of HASH FUNCTION TO BUCKETS
+    // reason for this is we previously would clear the map, but that would destroy our objects that have been bucketed
+    // So we'll hit O(m*n) on space, where m is number of hashing algos, and n is number of objects to be hashed, but doing so makes this easy
+    std::map<std::string, buckets_t> hash_func_to_buckets;
+    typedef std::pair<int, std::vector<hashable_t*>> mappair;
+    // map_iter: iterable of above buckets_t
+    std::map<int, std::vector<hashable_t*>>::iterator map_iter;
     std::set<int> unique_buckets_set;
     int highest_entry_count(0);
 
@@ -109,29 +117,27 @@ int main(int argc, char* argv[]){
         
         std::cout << "Hashing with " << func_iter->first << "..." << std::endl;
         // Reset our analysis structures and variables
-        bucket_to_count_map.clear();
-        unique_buckets_set.clear();
+        // Insert into metadictionary for this particular hash function
+        buckets_t buckets;
+        hash_func_to_buckets.insert(std::pair<std::string, buckets_t>(func_iter->first, buckets));
         highest_entry_count = 0;
 
         int (*hash_func)(const char*, int, int)(func_iter->second);
         
         // ** ACTUALLY DO THE HASH AND PUT IN A BUCKET ** 
         for (vec_iter = to_hash.begin(); vec_iter != to_hash.end(); vec_iter++){
-            hashval = (*hash_func)((*vec_iter)->hashable.c_str(), buckets, pow_base);
+            hashval = (*hash_func)((*vec_iter)->hashable.c_str(), target_buckets, pow_base);
 
             // See if exists
-            map_iter = bucket_to_count_map.find(hashval);
-            if (map_iter == bucket_to_count_map.end()){
+            map_iter = buckets.find(hashval);
+            if (map_iter == buckets.end()){
                 // Does not exist, insert it
-                bucket_to_count_map.insert(mappair(hashval, 1));
+                std::vector<hashable_t*> values;
+                values.push_back((*vec_iter));
+                buckets.insert(mappair(hashval, values));
             } else {
-                // Does exist, construct new value and replace
-                if (map_iter->second+1 > highest_entry_count){
-                    highest_entry_count = map_iter->second+1;
-                }
-                mappair newval(hashval, map_iter->second+1);
-                bucket_to_count_map.erase(map_iter);
-                bucket_to_count_map.insert(newval);
+                // Does exist, so append to the vector there
+                map_iter->second.push_back((*vec_iter));
             }
 
             // Keep an ordered set of the hash buckets as well
@@ -153,11 +159,12 @@ int main(int argc, char* argv[]){
                 } else { 
                     pos_ind = '-';
                 }
-                std::cout << "Bucket " << std::setw(floor(log10(buckets)+1)) << *bucket_iter << " contains " 
-                          << std::setw(floor(log10(item_ct)+1)) << map_iter->second << " elements " 
-                          << "(" << pos_ind << std::setw(4) << std::abs(map_iter->second-expected_bucket_size)
+                int actual_elements = map_iter->second.size();
+                std::cout << "Bucket " << std::setw(floor(log10(target_buckets)+1)) << *bucket_iter << " contains " 
+                          << std::setw(floor(log10(item_ct)+1)) << actual_elements << " elements " 
+                          << "(" << pos_ind << std::setw(4) << std::abs(actual_elements-expected_bucket_size)
                           << ", " << pos_ind << std::setw(2) 
-                          << (int)((std::abs((float)map_iter->second-expected_bucket_size)/expected_bucket_size)*100) << "%)\n";
+                          << (int)((std::abs((float)actual_elements-expected_bucket_size)/expected_bucket_size)*100) << "%)\n";
             }
 
             bucket_iter++;
